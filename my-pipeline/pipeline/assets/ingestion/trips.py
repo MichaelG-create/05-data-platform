@@ -31,9 +31,107 @@ materialization:
 # Tip: mark stable identifiers as `primary_key: true` if you plan to use `merge` later.
 # Docs: https://getbruin.com/docs/bruin/assets/columns
 columns:
-  - name: 
-    type: TODO_type
-    description: TODO
+  - name: trip_id
+    type: varchar
+    description: Synthetic unique identifier for the trip (e.g. hash of key fields).
+    primary_key: true
+
+  - name: service_type
+    type: varchar
+    description: Taxi service type (e.g. yellow, green, fhv).
+
+  - name: vendor_id
+    type: integer
+    description: Taxi technology provider (1 = Creative Mobile Technologies, 2 = VeriFone Inc.); may be null for some FHV records.
+
+  - name: pickup_datetime
+    type: timestamp
+    description: Date and time when the trip started (tpep/lpep/pickup_datetime normalized to a common field).
+
+  - name: dropoff_datetime
+    type: timestamp
+    description: Date and time when the trip ended (tpep/lpep/dropOff_datetime normalized to a common field).
+
+  - name: passenger_count
+    type: integer
+    description: Number of passengers in the vehicle; driver-entered and may be unreliable.
+
+  - name: trip_distance
+    type: double
+    description: Trip distance in miles reported by the taximeter.
+
+  - name: pickup_location_id
+    type: integer
+    description: TLC Taxi Zone where the trip began (PULocationID).
+
+  - name: dropoff_location_id
+    type: integer
+    description: TLC Taxi Zone where the trip ended (DOLocationID).
+
+  - name: ratecode_id
+    type: integer
+    description: Final rate code at trip end (1=Standard, 2=JFK, 3=Newark, 4=Nassau/Westchester, 5=Negotiated, 6=Group).
+
+  - name: store_and_fwd_flag
+    type: varchar
+    description: Indicates if trip record was stored on vehicle and forwarded later (Y/N).
+
+  - name: payment_type
+    type: integer
+    description: Payment method (1=Credit card, 2=Cash, 3=No charge, 4=Dispute, 5=Unknown, 6=Voided).
+
+  - name: fare_amount
+    type: double
+    description: Time-and-distance meter fare.
+
+  - name: extra
+    type: double
+    description: Miscellaneous extras and surcharges (e.g. rush hour, overnight).
+
+  - name: mta_tax
+    type: double
+    description: MTA tax charged on the trip.
+
+  - name: tip_amount
+    type: double
+    description: Tip amount (captured for card payments only).
+
+  - name: tolls_amount
+    type: double
+    description: Total tolls paid during the trip.
+
+  - name: improvement_surcharge
+    type: double
+    description: Taxi improvement surcharge applied at flag drop.
+
+  - name: total_amount
+    type: double
+    description: Total amount charged to the passenger, excluding cash tips.
+
+  - name: trip_type
+    type: integer
+    description: Trip type for green taxis (1=Street-hail, 2=Dispatch); null for other services.
+
+  - name: ehail_fee
+    type: double
+    description: E-hail fee for applicable trips; often null.
+
+  - name: dispatching_base_num
+    type: varchar
+    description: TLC base license number that dispatched the trip (FHV only).
+
+  - name: affiliated_base_number
+    type: varchar
+    description: Base number with which the vehicle is affiliated (FHV only).
+
+  - name: sr_flag
+    type: integer
+    description: Shared ride flag for High Volume FHV (1=part of shared ride chain; null otherwise).
+
+  - name: extracted_at
+    type: timestamp
+    description: Ingestion timestamp when this record was fetched into Bruin.
+
 
 @bruin"""
 
