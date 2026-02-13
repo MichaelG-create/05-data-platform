@@ -159,3 +159,31 @@ def materialize():
     start_date = os.environ["BRUIN_START_DATE"]    # "2020-01-01"
     end_date = os.environ["BRUIN_END_DATE"]        # "2020-01-31"
     # parse these to decide which months to fetch
+
+    BASE_URL = "https://github.com/DataTalksClub/nyc-tlc-data/releases/download"
+
+    year = start_date[:4]
+    month = start_date[5:7]  # "01", "02", ...
+
+    dfs = []
+
+    for service in taxi_types:
+      csv_file_name = f"{service}_tripdata_{year}-{month}.csv.gz"
+      url = f"{BASE_URL}/{service}/{csv_file_name}"
+
+      # requests.get + read_csv here
+      response = requests.get(url, timeout=60)
+      response.raise_for_status()
+
+      df = pd.read_csv(
+          BytesIO(response.content),
+          compression="gzip",
+          low_memory=False,
+      )
+
+      
+
+
+
+    
+
