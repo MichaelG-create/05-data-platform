@@ -45,25 +45,19 @@ columns:
 # TODO: Only implement `materialize()` if you are using Bruin Python materialization.
 # If you choose the manual-write approach (no `materialization:` block), remove this function and implement ingestion
 # as a standard Python script instead.
+
+
+import json
+import os
+import pandas as pd
+import requests
+from io import BytesIO  # For read_csv
+
+
 def materialize():
-    """
-    TODO: Implement ingestion using Bruin runtime context.
+    vars_ = json.loads(os.environ.get("BRUIN_VARS", "{}"))
+    taxi_types = vars_.get("taxi_types", ["yellow"])
 
-    Required Bruin concepts to use here:
-    - Built-in date window variables:
-      - BRUIN_START_DATE / BRUIN_END_DATE (YYYY-MM-DD)
-      - BRUIN_START_DATETIME / BRUIN_END_DATETIME (ISO datetime)
-      Docs: https://getbruin.com/docs/bruin/assets/python#environment-variables
-    - Pipeline variables:
-      - Read JSON from BRUIN_VARS, e.g. `taxi_types`
-      Docs: https://getbruin.com/docs/bruin/getting-started/pipeline-variables
-
-    Design TODOs (keep logic minimal, focus on architecture):
-    - Use start/end dates + `taxi_types` to generate a list of source endpoints for the run window.
-    - Fetch data for each endpoint, parse into DataFrames, and concatenate.
-    - Add a column like `extracted_at` for lineage/debugging (timestamp of extraction).
-    - Prefer append-only in ingestion; handle duplicates in staging.
-    """
-    # return final_dataframe
-
-
+    start_date = os.environ["BRUIN_START_DATE"]    # "2020-01-01"
+    end_date = os.environ["BRUIN_END_DATE"]        # "2020-01-31"
+    # parse these to decide which months to fetch
