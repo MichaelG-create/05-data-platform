@@ -7,7 +7,7 @@ In this homework, we'll use Bruin to build a complete data pipeline, from ingest
 1. Install Bruin CLI: `curl -LsSf https://getbruin.com/install/cli | sh`
 2. Initialize the zoomcamp template: `bruin init zoomcamp my-pipeline`
 3. Configure your `.bruin.yml` with a DuckDB connection
-4. Follow the tutorial in the [main module README](./course_readme/course.md)
+4. Follow the tutorial in the [main module README](../../../05-data-platforms/)
 
 After completing the setup, you should have a working NYC taxi data pipeline.
 
@@ -26,7 +26,7 @@ In a Bruin project, what are the required files/directories?
 
 ### Question 2. Materialization Strategies
 
-You're building a pipeline that processes NYC taxi data organized by month based on `pickup_datetime`. Which materialization strategy should you use for the staging layer that deduplicates and cleans the data?
+You're building a pipeline that processes NYC taxi data organized by month based on `pickup_datetime`. Which incremental strategy is best for processing a specific interval period by deleting and inserting data for that time period?
 
 - `append` - always add new rows
 - `replace` - truncate and rebuild entirely
@@ -64,7 +64,7 @@ You've modified the `ingestion/trips.py` asset and want to run it plus all downs
 - `bruin run ingestion.trips --all`
 - X `bruin run ingestion/trips.py --downstream`
 - `bruin run pipeline/trips.py --recursive`
-- `bruin run --select ingestion.trips+` (not dbt fashioned ;)
+- `bruin run --select ingestion.trips+`
 
 ---
 
@@ -72,10 +72,10 @@ You've modified the `ingestion/trips.py` asset and want to run it plus all downs
 
 You want to ensure the `pickup_datetime` column in your trips table never has NULL values. Which quality check should you add to your asset definition?
 
-- `unique: true`
-- X `not_null: true`
-- `positive: true`
-- `accepted_values: [not_null]`
+- `name: unique`
+- X `name: not_null`
+- `name: positive`
+- `name: accepted_values, value: [not_null]`
 
 ---
 
@@ -107,46 +107,3 @@ You're running a Bruin pipeline for the first time on a new DuckDB database. Wha
 
 =======
 
-## Learning in Public
-
-We encourage everyone to share what they learned. This is called "learning in public".
-
-Read more about the benefits [here](https://alexeyondata.substack.com/p/benefits-of-learning-in-public-and).
-
-### Example post for LinkedIn
-
-```
-🚀 Week 5 of Data Engineering Zoomcamp by @DataTalksClub complete!
-
-Just finished Module 5 - Data Platforms with Bruin. Learned how to:
-
-✅ Build end-to-end ELT pipelines with Bruin
-✅ Configure environments and connections
-✅ Use materialization strategies for incremental processing
-✅ Add data quality checks to ensure data integrity
-✅ Deploy pipelines from local to cloud (BigQuery)
-
-Modern data platforms in a single CLI tool - no vendor lock-in!
-
-Here's my homework solution: https://github.com/michaelg-create/05-data-platform
-
-Following along with this amazing free course - who else is learning data engineering?
-
-You can sign up here: https://github.com/DataTalksClub/data-engineering-zoomcamp/
-```
-
-### Example post for Twitter/X
-
-```
-🐻 Module 5 of Data Engineering Zoomcamp done!
-
-- Data Platforms with Bruin
-- End-to-end ELT pipelines
-- Data quality & lineage
-- Deployment to BigQuery
-
-My solution: https://github.com/MichaelG-create/05-data-platform
-
-Free course by @DataTalksClub: https://github.com/DataTalksClub/data-engineering-zoomcamp/
-#dezoomcamp
-```
