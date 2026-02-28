@@ -12,6 +12,9 @@ type: python
 # Example: python:3.11
 image: python:3.11
 
+# TODO: Set the connection.
+connection: duckdb-default
+
 # TODO: Choose materialization (optional, but recommended).
 # Bruin feature: Python materialization lets you return a DataFrame (or list[dict]) and Bruin loads it into your destination.
 # This is usually the easiest way to build ingestion assets in Bruin.
@@ -76,7 +79,7 @@ columns:
 
   - name: store_and_fwd_flag
     type: varchar(1)
-    description: 'Y' if trip record stored on vehicle and forwarded later, 'N' otherwise.
+    description: "'Y' if trip record stored on vehicle and forwarded later, 'N' otherwise."
 
   - name: payment_type
     type: integer
@@ -150,6 +153,8 @@ import pandas as pd
 import requests
 from io import BytesIO  # For read_csv
 from glob import glob
+from datetime import datetime
+import hashlib
 
 # TODO: Only implement `materialize()` if you are using Bruin Python materialization.
 # If you choose the manual-write approach (no `materialization:` block), remove this function and implement ingestion
@@ -227,7 +232,6 @@ def read_taxi_file_from_bytes(content: bytes, service: str) -> pd.DataFrame:
         BytesIO(content),
         compression="gzip",
         dtype=DTYPES,
-        parse_dates=PARSE_DATES,
         low_memory=False,
     )
     
@@ -236,18 +240,18 @@ def read_taxi_file_from_bytes(content: bytes, service: str) -> pd.DataFrame:
     
     # Normalize datetime columns
     if "tpep_pickup_datetime" in df.columns:
-        df["pickup_datetime"] = df["tpep_pickup_datetime"]
-        df["dropoff_datetime"] = df["tpep_dropoff_datetime"]
+        df["pickup_datetime"] = pd.to_datetime(df["tpep_pickup_datetime"])
+        df["dropoff_datetime"] = pd.to_datetime(df["tpep_dropoff_datetime"])
     elif "lpep_pickup_datetime" in df.columns:
-        df["pickup_datetime"] = df["lpep_pickup_datetime"]
-        df["dropoff_datetime"] = df["lpep_dropoff_datetime"]
+        df["pickup_datetime"] = pd.to_datetime(df["lpep_pickup_datetime"])
+        df["dropoff_datetime"] = pd.to_datetime(df["lpep_dropoff_datetime"])
     elif "pickup_datetime" in df.columns:
-        df["pickup_datetime"] = df["pickup_datetime"]  # FHV already normalized
-        df["dropoff_datetime"] = df["dropOff_datetime"] if "dropOff_datetime" in df.columns else pd.NA
+        df["pickup_datetime"] = pd.to_datetime(df["pickup_datetime"])
+        df["dropoff_datetime"] = pd.to_datetime(df["dropOff_datetime"]) if "dropOff_datetime" in df.columns else pd.NA
     
     # Normalize location columns
-    df["pickup_location_id"] = df.get("PULocationID") or df.get("PUlocationID")
-    df["dropoff_location_id"] = df.get("DOLocationID") or df.get("DOlocationID")
+    df["pickup_location_id"] = df.get("PULocationID", df.get("PUlocationID"))
+    df["dropoff_location_id"] = df.get("DOLocationID", df.get("DOlocationID"))
     
     # Normalize other columns
     df["vendor_id"] = df.get("VendorID")
