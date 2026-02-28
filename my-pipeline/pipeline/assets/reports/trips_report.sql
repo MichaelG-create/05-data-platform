@@ -6,16 +6,16 @@
 # - Quality checks: https://getbruin.com/docs/bruin/quality/available_checks
 
 # TODO: Set the asset name (recommended: reports.trips_report).
-name: TODO_SET_ASSET_NAME
+name: reports.trips_report
 
 # TODO: Set platform type.
 # Docs: https://getbruin.com/docs/bruin/assets/sql
 # suggested type: duckdb.sql
-type: TODO
+type: duckdb.sql
 
 # TODO: Declare dependency on the staging asset(s) this report reads from.
 depends:
-  - TODO_DEP_STAGING_ASSET
+  - staging.trips
 
 # TODO: Choose materialization strategy.
 # For reports, `time_interval` is a good choice to rebuild only the relevant time window.
@@ -23,25 +23,25 @@ depends:
 materialization:
   type: table
   # suggested strategy: time_interval
-  strategy: TODO
+  strategy: time_interval
   # TODO: set to your report's date column
-  incremental_key: TODO
+  incremental_key: pickup_date
   # TODO: set to `date` or `timestamp`
-  time_granularity: TODO
+  time_granularity: date
 
 # TODO: Define report columns + primary key(s) at your chosen level of aggregation.
 columns:
-  - name: TODO_dim
-    type: TODO
-    description: TODO
+  - name: service_type
+    type: varchar
+    description: Taxi service type
     primary_key: true
-  - name: TODO_date
+  - name: pickup_date
     type: DATE
-    description: TODO
+    description: Date of pickup
     primary_key: true
-  - name: TODO_metric
-    type: BIGINT
-    description: TODO
+  - name: total_fare
+    type: double
+    description: Total fare amount
     checks:
       - name: non_negative
 
@@ -53,7 +53,11 @@ columns:
 -- - Filter using `{{ start_datetime }}` / `{{ end_datetime }}` for incremental runs
 -- - GROUP BY your dimension + date columns
 
-SELECT * -- TODO: replace with your aggregation logic
+SELECT
+    service_type,
+    CAST(pickup_datetime AS DATE) AS pickup_date,
+    SUM(fare_amount) AS total_fare
 FROM staging.trips
 WHERE pickup_datetime >= '{{ start_datetime }}'
   AND pickup_datetime < '{{ end_datetime }}'
+GROUP BY 1, 2
