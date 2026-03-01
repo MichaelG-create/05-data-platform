@@ -1,1 +1,9 @@
 .bruin.yml
+duckdb.db
+logs/
+
+logs/runs
+logs/*.log
+__pycache__/
+*.py[cod]
+logs/queries

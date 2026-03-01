@@ -23,13 +23,13 @@ parameters:
 columns:
   - name: payment_type_id
     type: integer
-    description: The payment type (number) used for the taxi ride (e.g. credit card, cash, etc.)
+    description: "ID of the payment type"
     primary_key: true
     checks:
       - name: not_null
       - name: unique
   - name: payment_type_name
     type: string
-    description: The name of the payment type (e.g. credit card, cash, etc.)
+    description: "Name of the payment type"
     checks:
       - name: not_null
